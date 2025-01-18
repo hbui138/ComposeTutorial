@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeTutorialTheme {
+                // Surface with modifier used for padding with the system bar
                 Surface(modifier = Modifier.systemBarsPadding()) {
                     Conversation(SampleData.conversationSample)
                 }
