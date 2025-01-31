@@ -1,7 +1,9 @@
-import com.example.composetutorial.Message
+package com.example.composetutorial.data
+
+import com.example.composetutorial.ui.Message
 
 /**
- * SampleData for Jetpack Compose Tutorial 
+ * com.example.composetutorial.data.SampleData for Jetpack Compose Tutorial
  */
 object SampleData {
     // Sample conversation data
