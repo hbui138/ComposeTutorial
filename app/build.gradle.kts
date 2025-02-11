@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
 
     // Kotlin serialization plugin for type safe routes and navigation arguments
     kotlin("plugin.serialization") version "2.0.21"
@@ -45,6 +46,13 @@ android {
 dependencies {
 
     val nav_version = "2.8.5"
+    val room_version = "2.6.1"
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    implementation(libs.coil.compose)
 
     // Jetpack Compose integration
     implementation(libs.androidx.navigation.compose)

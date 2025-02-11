@@ -9,7 +9,7 @@ object SampleData {
     // Sample conversation data
     val conversationSample = listOf(
         Message(
-            "Lexi",
+            "Hieu",
             "Test...Test...Test..."
         ),
         Message(

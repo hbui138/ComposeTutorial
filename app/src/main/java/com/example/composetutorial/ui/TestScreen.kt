@@ -1,12 +1,15 @@
 package com.example.composetutorial.ui
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,29 +28,37 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil3.compose.rememberAsyncImagePainter
 import com.example.composetutorial.R
 import com.example.composetutorial.data.SampleData
+import com.example.composetutorial.data.UserPreferences
+import com.example.composetutorial.data.entity.User
+import com.example.composetutorial.data.viewmodel.MainViewModel
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 
 data class Message(val author: String, val body: String)
 
 @Composable
-fun MessageCard(msg: Message, modifier: Modifier = Modifier) {
+fun MessageCard(msg: Message, modifier: Modifier = Modifier, profileImageUrl: String? = null) {
     Column(modifier = modifier) { // Apply the main modifier here for the whole MessageCard
         Row(modifier = Modifier.padding(all = 8.dp)) { // Apply a separate modifier for the Row
             Image(
-                painter = painterResource(R.drawable.citlali),
+                painter = rememberAsyncImagePainter(profileImageUrl ?: R.drawable.citlali),
                 contentDescription = "Profile picture",
                 modifier = Modifier
                     // Set image size to 40 dp
@@ -99,39 +110,55 @@ fun MessageCard(msg: Message, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Conversation(messages: List<Message>) {
+fun Conversation(messages: List<Message>, profileImageUrl: String?) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = 800.dp)
     ) {
         items(messages) { message ->
-            MessageCard(message)
+            MessageCard(message, profileImageUrl = profileImageUrl)
         }
     }
 }
 
 @Composable
 fun TestScreen(navController: NavHostController) {
+    val mainViewModel: MainViewModel = viewModel()
+
+    // Fetch user data by ID from Room
+    var user by remember { mutableStateOf<User?>(null) }  // Fetch user from database
+
+
+    LaunchedEffect(Unit) {
+        // Assuming getUserById() is a suspend function
+        user = mainViewModel.getUserById(1)
+        Log.d("TestScreen", "Fetched user: $user")
+    }
+
     ComposeTutorialTheme {
         Surface(modifier = Modifier.systemBarsPadding()) {
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Conversation(SampleData.conversationSample)
+                val updatedMessages = SampleData.conversationSample.map { message ->
+                    message.copy(author = user?.username ?: "Default")
+                }
 
-                Button (
+                Conversation(
+                    messages = updatedMessages,
+                    profileImageUrl = user?.profileImageUrl
+                )
+
+                Button(
                     onClick = {
-                        // Check if there's a previous screen in the backstack
                         if (navController.previousBackStackEntry != null) {
-                            // Go back to the previous screen
                             navController.popBackStack()
                         }
                     },
                     modifier = Modifier
+                        .align(Alignment.BottomCenter) // Position button at the bottom
+                        .padding(16.dp)
                         .width(200.dp)
-                        .fillMaxWidth()
                 ) {
                     Text("Go Back")
                 }
