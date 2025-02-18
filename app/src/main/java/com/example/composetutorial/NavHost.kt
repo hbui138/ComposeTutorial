@@ -20,13 +20,14 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
+    temperatureViewModel: TemperatureViewModel,
     modifier: Modifier = Modifier) {
     NavHost(navController = navController,
         modifier = modifier,
         startDestination = Screen.Menu.route
     ) {
         composable(Screen.Menu.route) {
-            MenuScreen(navController)
+            MenuScreen(navController, temperatureViewModel)
         }
         composable(Screen.Test.route) {
             TestScreen(navController)

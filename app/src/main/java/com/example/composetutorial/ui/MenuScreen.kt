@@ -18,27 +18,38 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.R
 import com.example.composetutorial.Screen
+import com.example.composetutorial.TemperatureViewModel
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 
 @Composable
-fun MenuScreen(navController: NavHostController) {
+fun MenuScreen(navController: NavHostController, temperatureViewModel: TemperatureViewModel = viewModel()) {
+    val currentTemperature = temperatureViewModel.currentTemperature.collectAsState()
+
     Surface(modifier = Modifier.systemBarsPadding()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(5.dp))
+
+            Text(
+                text = "Current Temperature: ${"%.1f".format(currentTemperature.value)}°C",
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
 
             Image(
                 painter = painterResource(R.drawable.menuimage),
